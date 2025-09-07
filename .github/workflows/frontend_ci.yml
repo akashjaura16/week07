@@ -9,8 +9,8 @@ on:
       - '.github/workflows/frontend_ci.yml'
 
 env:
-  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}   # e.g. acrweek07s224911605.azurecr.io
-  ACR_NAME: ${{ secrets.ACR_NAME }}                   # e.g. acrweek07s224911605
+  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+  ACR_NAME: ${{ secrets.ACR_NAME }}
   IMAGE_TAG: ${{ github.sha }}-${{ github.run_id }}
 
 jobs:
@@ -19,17 +19,15 @@ jobs:
     permissions:
       contents: read
       id-token: write
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: false
 
-      # IMPORTANT: az acr login expects SHORT NAME, not login server
       - name: Login to Azure Container Registry
         run: az acr login --name $ACR_NAME
 

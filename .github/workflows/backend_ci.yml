@@ -9,8 +9,8 @@ on:
       - '.github/workflows/backend_ci.yml'
 
 env:
-  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}  # e.g. acrweek07s224911605.azurecr.io
-  ACR_NAME: ${{ secrets.ACR_NAME }}                  # e.g. acrweek07s224911605
+  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+  ACR_NAME: ${{ secrets.ACR_NAME }}
   IMAGE_TAG: ${{ github.sha }}-${{ github.run_id }}
 
 jobs:
@@ -42,10 +42,8 @@ jobs:
           --health-retries 5
         ports: [ "5433:5432" ]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Install dependencies
@@ -82,14 +80,13 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          enable-AzPSSession: false
+          enable-AzPSSession: false   # prevents extra PowerShell session cleanup
 
       - name: Login to Azure Container Registry (short name)
         run: az acr login --name $ACR_NAME
