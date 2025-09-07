@@ -9,7 +9,6 @@ on:
       - '.github/workflows/backend_ci.yml'
 
 env:
-  # Secrets you set in GitHub → Settings → Secrets and variables → Actions
   ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}  # e.g. acrweek07s224911605.azurecr.io
   ACR_NAME: ${{ secrets.ACR_NAME }}                  # e.g. acrweek07s224911605
   IMAGE_TAG: ${{ github.sha }}-${{ github.run_id }}
@@ -17,7 +16,6 @@ env:
 jobs:
   test_and_lint_backends:
     runs-on: ubuntu-latest
-
     services:
       product_db:
         image: postgres:15
@@ -31,7 +29,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports: [ "5432:5432" ]
-
       order_db:
         image: postgres:15
         env:
@@ -44,16 +41,13 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports: [ "5433:5432" ]
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-
       - name: Install dependencies
         run: |
           pip install --upgrade pip
@@ -62,7 +56,6 @@ jobs:
             pip install -r "$req"
           done
           pip install pytest httpx
-
       - name: Run product_service tests
         working-directory: backend/product_service
         env:
@@ -72,7 +65,6 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         run: pytest tests --maxfail=1 --disable-warnings -q
-
       - name: Run order_service tests
         working-directory: backend/order_service
         env:
@@ -89,7 +81,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -111,15 +102,3 @@ jobs:
         run: |
           docker build -t $ACR_LOGIN_SERVER/order_service:latest ./backend/order_service/
           docker push $ACR_LOGIN_SERVER/order_service:latest
-
-      # Logout from Azure for security (runs even if image push fails)
-            # Logout from Azure for security (runs even if image push fails)
-      - name: Logout from Azure (non-fatal)
-        if: always()
-        run:  |
-          az account show >/dev/null 2>&1 || { echo "No active Azure login, skipping."; exit 0; }
-          az logout || true
-
-
-
-# kick CI
