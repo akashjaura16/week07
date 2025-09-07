@@ -91,6 +91,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: false
+          allow-no-subscriptions: true 
 
       - name: Login to Azure Container Registry (short name)
         run: az acr login --name $ACR_NAME
@@ -111,3 +112,4 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: false
+          allow-no-subscriptions: true 
