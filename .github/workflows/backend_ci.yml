@@ -91,7 +91,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: false
-          allow-no-subscriptions: true 
+          allow-no-subscriptions: true
 
       - name: Login to Azure Container Registry (short name)
         run: az acr login --name $ACR_NAME
@@ -105,11 +105,3 @@ jobs:
         run: |
           docker build -t $ACR_LOGIN_SERVER/order_service:latest ./backend/order_service/
           docker push $ACR_LOGIN_SERVER/order_service:latest
-
-      # Ensure an active Azure session exists so post-job logout succeeds
-      - name: Ensure Azure session for cleanup
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          enable-AzPSSession: false
-          allow-no-subscriptions: true 
