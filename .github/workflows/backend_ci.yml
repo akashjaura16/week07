@@ -112,15 +112,14 @@ jobs:
           docker build -t $ACR_LOGIN_SERVER/order_service:latest ./backend/order_service/
           docker push $ACR_LOGIN_SERVER/order_service:latest
 
-<<<<<<< HEAD
+
       - name: Logout from Azure
         if: always()
         run: az logout
-=======
+
     # Logout from Azure for security (runs even if image push fails)
-    - name: Logout from Azure
-      run: az logout
-      if: always()
+      - name: Logout from Azure
+        run: az logout
+        if: always()
 
 # kick CI
->>>>>>> ccb6890 (kick CI)
