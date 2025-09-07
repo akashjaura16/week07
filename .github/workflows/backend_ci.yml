@@ -113,10 +113,13 @@ jobs:
           docker push $ACR_LOGIN_SERVER/order_service:latest
 
       # Logout from Azure for security (runs even if image push fails)
-      - name: Logout from Azure
+            # Logout from Azure for security (runs even if image push fails)
+      - name: Logout from Azure (non-fatal)
         if: always()
-        continue-on-error: true
-        run: az logout
+        run:  |
+          az account show >/dev/null 2>&1 || { echo "No active Azure login, skipping."; exit 0; }
+          az logout || true
+
 
 
 # kick CI
