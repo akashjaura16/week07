@@ -43,9 +43,11 @@ jobs:
         ports: [ "5433:5432" ]
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
@@ -54,6 +56,7 @@ jobs:
             pip install -r "$req"
           done
           pip install pytest httpx
+
       - name: Run product_service tests
         working-directory: backend/product_service
         env:
@@ -63,6 +66,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         run: pytest tests --maxfail=1 --disable-warnings -q
+
       - name: Run order_service tests
         working-directory: backend/order_service
         env:
@@ -86,7 +90,7 @@ jobs:
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          enable-AzPSSession: false   # prevents extra PowerShell session cleanup
+          enable-AzPSSession: false
 
       - name: Login to Azure Container Registry (short name)
         run: az acr login --name $ACR_NAME
@@ -100,3 +104,10 @@ jobs:
         run: |
           docker build -t $ACR_LOGIN_SERVER/order_service:latest ./backend/order_service/
           docker push $ACR_LOGIN_SERVER/order_service:latest
+
+      # Ensure an active Azure session exists so post-job logout succeeds
+      - name: Ensure Azure session for cleanup
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: false
